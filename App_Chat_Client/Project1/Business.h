@@ -21,11 +21,18 @@
 #define SIGNUP_NOTIFICATION  "03"
 #define INPUT_SIZE 256
 
+
+struct Team
+{
+	int id;
+	string teamName;
+};
 vector<string> listFriend;
-vector<string> listTeam;
+vector<Team> listTeam;
+
+
 
 bool checkIsExistedName(char *username);
-
 void getNotification(char * recvBuff, char notification[]) {
 
 	notification[0] = recvBuff[0];
@@ -81,21 +88,21 @@ bool receiveMessageFromFriend(char *recvBuff, HWND hwnd) {
 	string messDisplay;
 	messDisplay.append(message);
 	messDisplay.append("\r\n");
-	SendDlgItemMessage(hwnd, CHAT_BOX, EM_REPLACESEL, 0, (LPARAM)message);
+	SendDlgItemMessage(hwnd, CHAT_BOX, EM_REPLACESEL, 0, (LPARAM)messDisplay.c_str());
 	return true;
 }
-bool receiveMessageFromTeam(char*recvBuff) {
+bool receiveMessageFromTeam(char*recvBuff, HWND hwnd) {
 	//format : [notification][team id]|[username]|[message]
 	//get team id
-	char teamId[10];
-	int x = 1;
+	char teamName[10];
+	int x = 2;
 	int index = 0;
 	while (recvBuff[x] != '|') {
-		teamId[index] = recvBuff[x];
+		teamName[index] = recvBuff[x];
 		index++;
 		x++;
 	}
-	teamId[index] = 0;
+	teamName[index] = 0;
 	//---------------------------------------------
 	//get username
 	char username[128];
@@ -118,23 +125,48 @@ bool receiveMessageFromTeam(char*recvBuff) {
 		x++;
 	}
 	message[index] = 0;
-	//cho nay in ra cai tin nhan tu thang username o team teamid
+
+	string messDisplay;
+	messDisplay.append("<");
+	messDisplay.append(teamName);
+	messDisplay.append(">");
+	messDisplay.append(message);
+	SendDlgItemMessage(hwnd, CHAT_BOX, EM_REPLACESEL, 0, (LPARAM)messDisplay.c_str());
 	return true;
 }
 
 
 bool makeTeamResponse(char* recvBuff) {
-		int x = 2;
-		char groupname[BUFF_SIZE];
-		int i = 0;
-	while (recvBuff[x] != '\0') {
-			groupname[i] = recvBuff[x];
-			x++;
-			i++;
+	//format   [NOTIFICATION][Team ID][Team Name]
+	int x = 2;
+	string teamName;
+	char c_teamId[128];
+	int teamId;
+	//get teamId from buff
+	int i = 0;
+	while (recvBuff[x] != '|') {
+		c_teamId[i] = recvBuff[x];
+		x++;
+		i++;
 	}
-	groupname[i] = 0;
-	MessageBox(NULL, groupname, "test", MB_OK);
-	SendMessage(hListGroups, LB_ADDSTRING, 0, (LPARAM)groupname);
+	x++;
+	c_teamId[i] = 0;
+	teamId = atoi(c_teamId);
+	//get teamName from buff
+	while (recvBuff[x] != 0) {
+		teamName += recvBuff[x];
+		x++;
+	}
+	//add team to list team
+	Team team;
+	team.id = teamId;
+	team.teamName = teamName;
+	listTeam.push_back(team);
+	SendMessage(hListGroups, LB_RESETCONTENT, 0, 0);
+	for (int i = 0; i < listTeam.size(); i++)
+	{
+		SendMessage(hListGroups, LB_ADDSTRING, 0, (LPARAM)listTeam[i].teamName.c_str());
+	}
 	return true;
 }
 
@@ -161,37 +193,35 @@ void getListFriendResponse(char* recvBuff) {
 	SendMessage(hListFriends, LB_RESETCONTENT, 0, 0);
 	for (int i = 0; i < listFriend.size(); i++)
 	{
-		/*int pos = (int)SendMessage(hListFriends, LB_ADDSTRING, 0,
-			(LPARAM)listFriend[i].c_str());
-		SendMessage(hListFriends, LB_SETITEMDATA, pos, (LPARAM)listFriend[i].c_str());*/
 		SendMessage(hListFriends, LB_ADDSTRING, 0, (LPARAM)listFriend[i].c_str());
 	}
 }
 
-bool getListTeamResponse(char* recvBuff) {
-	//format : [notification][numofTeam][team1]|[team2]
-	MessageBox(NULL, recvBuff, "list team ne", MB_OK);
-	listTeam.clear();
-	// copy list team from recevBUFF to list
-	int x = 4;
 
-	while (recvBuff[x] != NULL) {
-		//get team name
-		string teamName;
-		int i = 0;
-		while (recvBuff[x] != '|') {
-			teamName[i] = recvBuff[x];
-			x++;
-			i++;
-		}
-		x++;
-		listTeam.push_back(teamName);
+void deleteTeam(int teamId) {
+	for (int i = 0; i < listTeam.size(); i++) {
+		if (teamId == listTeam[i].id) listTeam.erase(listTeam.begin + i);
 	}
-	SendMessage(hListGroups, LB_RESETCONTENT, 0, 0);
-	for (int i = 0; i < listTeam.size(); i++)
-		SendMessage(hListGroups, LB_ADDSTRING, 0, (LPARAM)listTeam[i].c_str());
+}
+
+
+bool leaveTeamResponse(char * recvBuff) {
+	char c_teamId[128];
+	int x = 2;
+	int index = 0;
+	while (recvBuff[x] != 0) {
+		c_teamId[index] = recvBuff[x];
+		x++;
+		index++;
+	}
+	c_teamId[index] = 0;
+	int teamId = atoi(c_teamId);
+	deleteTeam(teamId);
+
 	return true;
 }
+
+
 
 bool checkIsExistedName(char *username) {
 	for (int i = 0; i < listFriend.size(); i++) {
@@ -209,4 +239,11 @@ bool checkUserInListFriend(string nameUser) {
 	return false;
 }
 
+
+int findIdTeam(string teamName) {
+	for (int i = 0; i < listTeam.size(); i++) {
+		if (teamName.compare(listTeam[i].teamName) == 0) return listTeam[i].id;
+	}
+	return 0;
+}
 

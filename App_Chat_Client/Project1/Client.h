@@ -1,11 +1,11 @@
 #pragma once
-
 #include <winsock2.h>
 #include <ws2tcpip.h>
 #include <thread>
 #include <Windows.h>
 #include <iostream>
 #include <vector>
+
 #define BUFF_SIZE 2048
 #define SUCCESS '1'
 #define LOGGED_IN '2'
@@ -21,6 +21,7 @@
 #define SIGNUP_NOTIFICATION  "03"
 #define GET_LIST_FRIEND_NOTIFICATION "11"
 #define GET_LIST_TEAM_NOTIFICATION "10"
+#define LEAVE_GROUP_NOTIFICATION "09"
 #define INPUT_SIZE 256
 
 class Client
@@ -39,6 +40,7 @@ public:
 	int sendToFriend(char*friendID, char* message);
 	int sendToTeam(char* teamID, char* message);
 	int getListFriendRequest();
+	int leaveTeamRequest(char* teamName);
 	static void ClientHandler(HWND hwnd);
 	bool CloseConnection();
 

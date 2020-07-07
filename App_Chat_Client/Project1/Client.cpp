@@ -5,6 +5,7 @@
 #include <string>
 #include <vector>
 #include <string.h>
+
 #pragma warning(disable:4996)
 Client::Client(int PORT)
 {
@@ -145,24 +146,9 @@ int Client::sendToFriend(char*friendID, char* message) {
 	return 0;
 }
 
-int Client::sendToTeam(char* teamID, char* message) {
-	// format of message:    [NOTIFICATION][teamID]|[Message]
-	int ret;
-	char buff[BUFF_SIZE];
-	strcpy(buff, SEND_TO_TEAM_NOTIFICATION);
-	strcat(buff, teamID);
-	strcat(buff, "|");
-	strcat(buff, message);
-	buff[strlen(buff)] = 0;
 
-	// send to server
-	ret = send(ServerConnection, buff, strlen(buff), 0);
-	if (ret == SOCKET_ERROR) {
-		printf("Error! cannot send message. %d ", WSAGetLastError());
-		return -1;
-	}
-	return 0;
-}
+
+
 int Client::signUpRequest(char * username, char*password) {
 	// format of message:    [NOTIFICATION][username]|[password]
 	int ret;

@@ -14,13 +14,13 @@
 #define REGISTER "03"
 #define LOGIN "04"
 #define LOGOUT "05"
-#define CREATE_ROOM_CHAT "06"
+#define CREATE_TEAM_CHAT "06"
 #define PRIVATE_MESSAGE "07"
 #define PUBLIC_MESSAGE "08"
 #define LEAVE_THE_CONVERSATION "09"
-#define LIST_ROOM_CHAT "10"
+#define LIST_TEAM_CHAT "10"
 #define LIST_USER_ONLINE "11"
-#define LIST_USER_IN_ROOM "12"
+#define LIST_USER_IN_TEAM "12"
 
 #define SYMBOL '|'
 
@@ -30,15 +30,15 @@ typedef struct Client
 	SOCKET connSock;
 };
 
-typedef struct RoomChat
+typedef struct TeamChat
 {
 	int id;
-	string roomName;
+	string teamName;
 	vector<string> listUsername;
 };
 
 vector<Client> listClient;
-vector<RoomChat> listRoomChat;
+vector<TeamChat> listTeamChat;
 using namespace std;
 
 int classifyMessageAndSendToClient(SOCKET connSock, char buff[]);
@@ -46,25 +46,17 @@ int sendToClient(SOCKET currentConnSock, char buff[]);
 int recvFromClient(SOCKET connSock, char buff[]);
 int getMessages(string *messages, char buff[], int start);
 int checkUserOnline(string username);
-int findRoomById(int id);
-int checkUserInRoom(string username, int index);
+int findTeamById(int id);
+int checkUserInTeam(string username, int index);
 void packageBuff(char *active, string message, char *buff);
 char* getTypeNotification(char *buff);
 int findUserNameBySocket(SOCKET connSock);
-int findConnSock(SOCKET connSock);
 
-int findConnSock(SOCKET connSock) {
+
+int findUserNameBySocket(SOCKET connSock) {
 	if (listClient.size() == 0) {
 		return -1;
 	}
-	for (int i = 0; i < listClient.size(); i++) {
-		if (listClient[i].connSock == connSock) {
-			return i;
-		}
-	}
-	return -1;
-}
-int findUserNameBySocket(SOCKET connSock) {
 	for (int i = 0; i < listClient.size(); i++) {
 		if (listClient[i].connSock == connSock) {
 			return i;
@@ -128,24 +120,26 @@ int checkUserOnline(string username) {
 	return -1;
 }
 
-int findRoomById(int id) {
-	if (listRoomChat.size() == 0) {
+int findTeamById(int id) {
+	if (listTeamChat.size() == 0) {
 		return -1;
 	}
-	for (int i = 0; i < listRoomChat.size(); i++) {
-		if (listRoomChat[i].id == id) {
+	for (int i = 0; i < listTeamChat.size(); i++) {
+		if (listTeamChat[i].id == id) {
 			return i;
 		}
 	}
 	return -1;
 }
 
-int checkUserInRoom(string username, int index) {
-	if (listRoomChat[index].listUsername.size() == 0) {
+int checkUserInTeam(string username, int index) {
+	if (listTeamChat[index].listUsername.size() == 0) {
+		cout << "  list deo co nha  " << endl;
 		return -1;
 	}
-	for (int i = 0; i < listRoomChat[index].listUsername.size(); i++) {
-		if (listRoomChat[index].listUsername[i].compare(username) == 0) {
+	for (int i = 0; i < listTeamChat[index].listUsername.size(); i++) {
+		cout << listTeamChat[index].listUsername[i] << "  username lits " << endl;
+		if (listTeamChat[index].listUsername[i].compare(username) == 0) {
 			return i;
 		}
 	}

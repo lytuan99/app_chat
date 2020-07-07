@@ -1,33 +1,29 @@
 ﻿  stdafx.cpp
   Main.cpp
-e:\ltm\server\app_chat\serverappchat\dataio.h(12): warning C4091: 'typedef ': ignored on left of 'User' when no variable is declared
-e:\ltm\server\app_chat\serverappchat\business.h(9): warning C4005: 'ERROR': macro redefinition
+c:\users\lytua\desktop\tai_lieu_app_chat\app_chat\app_chat\app_chat_server\serverappchat\dataio.h(12): warning C4091: 'typedef ': ignored on left of 'User' when no variable is declared
+c:\users\lytua\desktop\tai_lieu_app_chat\app_chat\app_chat\app_chat_server\serverappchat\business.h(9): warning C4005: 'ERROR': macro redefinition
   c:\program files (x86)\windows kits\8.1\include\um\wingdi.h(114): note: see previous definition of 'ERROR'
-e:\ltm\server\app_chat\serverappchat\business.h(31): warning C4091: 'typedef ': ignored on left of 'Client' when no variable is declared
-e:\ltm\server\app_chat\serverappchat\business.h(38): warning C4091: 'typedef ': ignored on left of 'RoomChat' when no variable is declared
-e:\ltm\server\app_chat\serverappchat\business.h(60): warning C4018: '<': signed/unsigned mismatch
-e:\ltm\server\app_chat\serverappchat\business.h(68): warning C4018: '<': signed/unsigned mismatch
-e:\ltm\server\app_chat\serverappchat\business.h(78): warning C4018: '<': signed/unsigned mismatch
-e:\ltm\server\app_chat\serverappchat\business.h(76): warning C4101: 'tmp': unreferenced local variable
-e:\ltm\server\app_chat\serverappchat\business.h(104): warning C4018: '<': signed/unsigned mismatch
-e:\ltm\server\app_chat\serverappchat\business.h(108): warning C4018: '<': signed/unsigned mismatch
-e:\ltm\server\app_chat\serverappchat\business.h(123): warning C4018: '<': signed/unsigned mismatch
-e:\ltm\server\app_chat\serverappchat\business.h(135): warning C4018: '<': signed/unsigned mismatch
-e:\ltm\server\app_chat\serverappchat\business.h(147): warning C4018: '<': signed/unsigned mismatch
-e:\ltm\server\app_chat\serverappchat\server.h(142): warning C4018: '<': signed/unsigned mismatch
-e:\ltm\server\app_chat\serverappchat\server.h(145): warning C4018: '<': signed/unsigned mismatch
-e:\ltm\server\app_chat\serverappchat\server.h(215): warning C4018: '<': signed/unsigned mismatch
-e:\ltm\server\app_chat\serverappchat\server.h(231): warning C4018: '<': signed/unsigned mismatch
-e:\ltm\server\app_chat\serverappchat\server.h(243): warning C4996: 'itoa': The POSIX name for this item is deprecated. Instead, use the ISO C and C++ conformant name: _itoa. See online help for details.
-  c:\program files (x86)\windows kits\10\include\10.0.10240.0\ucrt\stdlib.h(1316): note: see declaration of 'itoa'
-e:\ltm\server\app_chat\serverappchat\server.h(269): warning C4018: '<': signed/unsigned mismatch
-e:\ltm\server\app_chat\serverappchat\server.h(291): warning C4101: 'converNumberUser': unreferenced local variable
-e:\ltm\server\app_chat\serverappchat\server.h(334): warning C4018: '<': signed/unsigned mismatch
-e:\ltm\server\app_chat\serverappchat\server.h(358): warning C4018: '<': signed/unsigned mismatch
-e:\ltm\server\app_chat\serverappchat\server.h(367): warning C4018: '<': signed/unsigned mismatch
-e:\ltm\server\app_chat\serverappchat\main.cpp(27): warning C4101: 'ret': unreferenced local variable
-e:\ltm\server\app_chat\serverappchat\main.cpp(54): warning C4101: 'dwRetval': unreferenced local variable
-e:\ltm\server\app_chat\serverappchat\business.h(94): warning C4172: returning address of local variable or temporary: typeRequest
-e:\ltm\server\app_chat\serverappchat\server.h(97): warning C4715: 'classifyMessageAndSendToClient': not all control paths return a value
-  ServerAppChat.vcxproj -> E:\LTM\Server\App_Chat\Debug\ServerAppChat.exe
-  ServerAppChat.vcxproj -> E:\LTM\Server\App_Chat\Debug\ServerAppChat.pdb (Full PDB)
+c:\users\lytua\desktop\tai_lieu_app_chat\app_chat\app_chat\app_chat_server\serverappchat\business.h(31): warning C4091: 'typedef ': ignored on left of 'Client' when no variable is declared
+c:\users\lytua\desktop\tai_lieu_app_chat\app_chat\app_chat\app_chat_server\serverappchat\business.h(38): warning C4091: 'typedef ': ignored on left of 'TeamChat' when no variable is declared
+c:\users\lytua\desktop\tai_lieu_app_chat\app_chat\app_chat\app_chat_server\serverappchat\business.h(60): warning C4018: '<': signed/unsigned mismatch
+c:\users\lytua\desktop\tai_lieu_app_chat\app_chat\app_chat\app_chat_server\serverappchat\business.h(70): warning C4018: '<': signed/unsigned mismatch
+c:\users\lytua\desktop\tai_lieu_app_chat\app_chat\app_chat\app_chat_server\serverappchat\business.h(68): warning C4101: 'tmp': unreferenced local variable
+c:\users\lytua\desktop\tai_lieu_app_chat\app_chat\app_chat\app_chat_server\serverappchat\business.h(96): warning C4018: '<': signed/unsigned mismatch
+c:\users\lytua\desktop\tai_lieu_app_chat\app_chat\app_chat\app_chat_server\serverappchat\business.h(100): warning C4018: '<': signed/unsigned mismatch
+c:\users\lytua\desktop\tai_lieu_app_chat\app_chat\app_chat\app_chat_server\serverappchat\business.h(115): warning C4018: '<': signed/unsigned mismatch
+c:\users\lytua\desktop\tai_lieu_app_chat\app_chat\app_chat\app_chat_server\serverappchat\business.h(127): warning C4018: '<': signed/unsigned mismatch
+c:\users\lytua\desktop\tai_lieu_app_chat\app_chat\app_chat\app_chat_server\serverappchat\business.h(140): warning C4018: '<': signed/unsigned mismatch
+c:\users\lytua\desktop\tai_lieu_app_chat\app_chat\app_chat\app_chat_server\serverappchat\server.h(145): warning C4018: '<': signed/unsigned mismatch
+c:\users\lytua\desktop\tai_lieu_app_chat\app_chat\app_chat\app_chat_server\serverappchat\server.h(148): warning C4018: '<': signed/unsigned mismatch
+c:\users\lytua\desktop\tai_lieu_app_chat\app_chat\app_chat\app_chat_server\serverappchat\server.h(229): warning C4018: '<': signed/unsigned mismatch
+c:\users\lytua\desktop\tai_lieu_app_chat\app_chat\app_chat\app_chat_server\serverappchat\server.h(258): warning C4018: '<': signed/unsigned mismatch
+c:\users\lytua\desktop\tai_lieu_app_chat\app_chat\app_chat\app_chat_server\serverappchat\server.h(280): warning C4101: 'converNumberUser': unreferenced local variable
+c:\users\lytua\desktop\tai_lieu_app_chat\app_chat\app_chat\app_chat_server\serverappchat\server.h(323): warning C4018: '<': signed/unsigned mismatch
+c:\users\lytua\desktop\tai_lieu_app_chat\app_chat\app_chat\app_chat_server\serverappchat\server.h(347): warning C4018: '<': signed/unsigned mismatch
+c:\users\lytua\desktop\tai_lieu_app_chat\app_chat\app_chat\app_chat_server\serverappchat\server.h(356): warning C4018: '<': signed/unsigned mismatch
+c:\users\lytua\desktop\tai_lieu_app_chat\app_chat\app_chat\app_chat_server\serverappchat\main.cpp(27): warning C4101: 'ret': unreferenced local variable
+c:\users\lytua\desktop\tai_lieu_app_chat\app_chat\app_chat\app_chat_server\serverappchat\main.cpp(54): warning C4101: 'dwRetval': unreferenced local variable
+c:\users\lytua\desktop\tai_lieu_app_chat\app_chat\app_chat\app_chat_server\serverappchat\business.h(86): warning C4172: returning address of local variable or temporary: typeRequest
+c:\users\lytua\desktop\tai_lieu_app_chat\app_chat\app_chat\app_chat_server\serverappchat\server.h(98): warning C4715: 'classifyMessageAndSendToClient': not all control paths return a value
+  ServerAppChat.vcxproj -> C:\Users\lytua\Desktop\tai_lieu_app_chat\APP_CHAT\app_chat\App_Chat_Server\Debug\ServerAppChat.exe
+  ServerAppChat.vcxproj -> C:\Users\lytua\Desktop\tai_lieu_app_chat\APP_CHAT\app_chat\App_Chat_Server\Debug\ServerAppChat.pdb (Full PDB)

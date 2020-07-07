@@ -1,34 +1,39 @@
 ﻿
 
-
 #include "Client.h"
 #include "Login.h"
 #include "Signup.h"
 #include "Chatbox.h"
 #include "CreateGroup.h"
+#include "ExitGroup.h"
 #include "util.h"
-#include"Business.h"
+#include "Business.h"
 
+#pragma warning(disable:4996)
 using namespace std;
 
 #define _AFXDLL
-#define OPTION_MENU_CREATE_GROUP 104
-#define OPTION_MENU_EXIT 111
+#define OPTION_MENU_EXIT_GROUP 654
+#define OPTION_MENU_CREATE_GROUP 655
+#define OPTION_MENU_EXIT 666
+
 
 LRESULT CALLBACK windowprocessforwindowMain(HWND handleforwindow1, UINT message, WPARAM wParam, LPARAM lParam);
 LRESULT CALLBACK windowprocessforwindowLogin(HWND handleforwindow2, UINT message, WPARAM wParam, LPARAM lParam);
 LRESULT CALLBACK windowprocessforwindowSignup(HWND handleforwindow3, UINT message, WPARAM wParam, LPARAM lParam);
 LRESULT CALLBACK windowprocessforwindowChatbox(HWND handleforwindow4, UINT message, WPARAM wParam, LPARAM lParam);
 LRESULT CALLBACK windowprocessforwindowCreateGroup(HWND handleforwindow5, UINT message, WPARAM wParam, LPARAM lParam);
+LRESULT CALLBACK windowprocessforwindowLeaveGroup(HWND handleforwindow6, UINT message, WPARAM wParam, LPARAM lParam);
 bool checkUserInListUserTemp(char* nameUser);
 
 #define BTN_START 1000
 
-bool windowLoginOpen, windowSignupOpen, windowChatboxOpen, windowCreateGroupOpen = false;
+bool windowLoginOpen, windowSignupOpen, windowChatboxOpen, windowCreateGroupOpen, windowLeaveGroupOpen = false;
 bool windowMainOpen = false;
 
 
-enum windowtoopenenumt {windowMain, windowLogin, windowSignup, windowChatbox, windowCreateGroup };
+enum windowtoopenenumt {windowMain, windowLogin, windowSignup, windowChatbox, windowCreateGroup, windowLeaveGroup
+};
 
 windowtoopenenumt windowtoopenenum = windowMain;
 
@@ -62,15 +67,56 @@ void Client::ClientHandler(HWND hwnd)
 			break;
 		}
 		else if (strcmp(notification, RECEIVE_FROM_FRIEND_NOTIFICATION) == 0) receiveMessageFromFriend(recvBuff, hwnd);
-		else if (strcmp(notification, RECEIVE_FROM_TEAM_NOTIFICATION) == 0)   receiveMessageFromTeam(recvBuff);
+		else if (strcmp(notification, RECEIVE_FROM_TEAM_NOTIFICATION) == 0)   receiveMessageFromTeam(recvBuff, hwnd);
 		else if (strcmp(notification, MAKE_TEAM_NOTIFICATION) == 0)  makeTeamResponse(recvBuff);
 		else if (strcmp(notification, GET_LIST_FRIEND_NOTIFICATION) == 0)	getListFriendResponse(recvBuff);
-		else if (strcmp(notification, GET_LIST_TEAM_NOTIFICATION) == 0) getListTeamResponse(recvBuff);
+		else if (strcmp(notification, LEAVE_GROUP_NOTIFICATION)) leaveTeamResponse(recvBuff);
 	}
 }
 
+int Client::sendToTeam(char* teamName, char* message) {
 
+	// format of message:    [NOTIFICATION][teamID]|[Message]
+	int ret;
+	char buff[BUFF_SIZE];
+	int teamId = findIdTeam(teamName);
+	char c_teamId[128];
+	itoa(teamId, c_teamId, 10);
+	strcpy(buff, SEND_TO_TEAM_NOTIFICATION);
+	strcat(buff, c_teamId);
+	strcat(buff, "|");
+	strcat(buff, message);
+	buff[strlen(buff)] = 0;
+	// send to server
+	ret = send(ServerConnection, buff, strlen(buff), 0);
+	if (ret == SOCKET_ERROR) {
+		printf("Error! cannot send message. %d ", WSAGetLastError());
+		return -1;
+	}
+	return 0;
+}
 
+int Client::leaveTeamRequest(char* teamName) {
+	// format of message:    [NOTIFICATION][teamID]
+	int ret;
+	int teamId = findIdTeam(teamName);
+	char c_teamId[128];
+	itoa(teamId, c_teamId, 10);
+	char buff[BUFF_SIZE];
+	strcpy(buff, LEAVE_GROUP_NOTIFICATION);
+	strcat(buff, c_teamId);
+	buff[strlen(buff)] = 0;
+	MessageBox(NULL, buff, "ok test leave", MB_OK);
+	// send to server
+	ret = send(ServerConnection, buff, strlen(buff), 0);
+
+	if (ret == SOCKET_ERROR) {
+		printf("Error! cannot send message. %d ", WSAGetLastError());
+		return -1;
+	}
+	MessageBox(NULL, "DA GUI ROI NHE", "ok test leave", MB_OK);
+	return 0;
+}
 int WINAPI WinMain(HINSTANCE hInst, HINSTANCE hPrevInst, LPSTR lpCmdLine, int nShowCmd)
 {
 	myClient = new Client(DEFAULT_PORT);
@@ -84,11 +130,12 @@ int WINAPI WinMain(HINSTANCE hInst, HINSTANCE hPrevInst, LPSTR lpCmdLine, int nS
 	WNDCLASSEX wcforwindowChatbox;
 	WNDCLASSEX wcforwindowCreateGroup;
 	WNDCLASSEX wcforwindowLogin;
-
+	WNDCLASSEX wcforwindowLeaveGroup;
 	/*HWND handleforwindowLogin;
 	HWND handleforwindowSignup;
 	HWND handleforwindowChatbox;
 	HWND handleforwindowCreateGroup;*/
+	HWND handleforwindowLeaveGroup;
 
 	//create window Main (1)		default manage all messages
 	WNDCLASSEX wcforwindowMain;
@@ -124,7 +171,7 @@ int WINAPI WinMain(HINSTANCE hInst, HINSTANCE hPrevInst, LPSTR lpCmdLine, int nS
 	ShowWindow(handleforwindowMain, nShowCmd);
 
 
-	// bắt đầu xử lý các sự kiện
+	// begin handling events
 	MSG msg;
 	bool endloop = false;
 
@@ -155,10 +202,16 @@ int WINAPI WinMain(HINSTANCE hInst, HINSTANCE hPrevInst, LPSTR lpCmdLine, int nS
 				break;
 			case windowCreateGroup:
 				if (windowCreateGroupOpen == false) {
-					createwindowCreateGroup(wcforwindowChatbox, hwnd, hInst, nShowCmd);
+					createwindowCreateGroup(wcforwindowCreateGroup, hwnd, hInst, nShowCmd);
+				}
+				break;
+			case windowLeaveGroup:
+				if (windowLeaveGroupOpen == false) {
+					createwindowLeaveGroup(wcforwindowLeaveGroup, handleforwindowLeaveGroup, hInst, nShowCmd);
 				}
 				break;
 			}
+			
 			windowtoopenenum = windowMain;
 		}
 
@@ -168,7 +221,6 @@ int WINAPI WinMain(HINSTANCE hInst, HINSTANCE hPrevInst, LPSTR lpCmdLine, int nS
 	}	// end while
 
 	MessageBox(NULL, "All Windows are closed. Program will now close.", "Message", MB_ICONINFORMATION);
-
 }
 
 
@@ -204,7 +256,6 @@ LRESULT CALLBACK windowprocessforwindowLogin(HWND hwndLogin, UINT message, WPARA
 	switch (message) {
 	case WM_CREATE:
 		windowLoginOpen = true;
-		createMenu(hwndLogin);
 		addControlLogin(hwndLogin);
 		break;
 	case WM_CLOSE:
@@ -323,6 +374,16 @@ LRESULT CALLBACK windowprocessforwindowChatbox(HWND hwndChatbox, UINT message, W
 			break;
 		case WM_COMMAND:
 			switch LOWORD(wParam) {
+			case OPTION_MENU_CREATE_GROUP:
+				windowtoopenenum = windowCreateGroup;
+				break;
+			case OPTION_MENU_EXIT_GROUP:
+				windowtoopenenum = windowLeaveGroup;
+				break;
+			case OPTION_MENU_EXIT:
+				DestroyWindow(hwndChatbox);
+				windowLoginOpen = windowMainOpen = windowSignupOpen = windowChatboxOpen = windowCreateGroupOpen = false;
+				break;
 			case LB_FRIEND:
 				switch (HIWORD(wParam)) {
 				case LBN_DBLCLK:			// bắt sự kiện click double trong list Friend
@@ -338,7 +399,7 @@ LRESULT CALLBACK windowprocessforwindowChatbox(HWND hwndChatbox, UINT message, W
 					friendChating.append(buffer);
 					string mess = "chat with friend: " + friendChating;
 					MessageBox(NULL, mess.c_str(), "turn", MB_OK);
-					SetWindowText(hEdit_chatbox, "");
+					//SetWindowText(hEdit_chatbox, "");
 					SetWindowText(hStaticChating, friendChating.c_str());
 				}
 				break;
@@ -358,7 +419,7 @@ LRESULT CALLBACK windowprocessforwindowChatbox(HWND hwndChatbox, UINT message, W
 					groupChating.append(Buffer);
 					string mess = "chat with group: " + groupChating;
 					MessageBox(NULL, mess.c_str(), "turn", MB_OK);
-					SetWindowText(hEdit_chatbox, "");
+					//SetWindowText(hEdit_chatbox, "");			// reset message box
 					SetWindowText(hStaticChating, groupChating.c_str());
 				}
 				break;
@@ -369,20 +430,27 @@ LRESULT CALLBACK windowprocessforwindowChatbox(HWND hwndChatbox, UINT message, W
 					break;
 				}
 				string mess = getTextFromEdit(hwndChatbox, EDIT_TYPING_MESS);
-				string messToBox = getMessageToBox(mess, nameUser);
-				SendMessage(hEdit_chatbox, EM_REPLACESEL, 0, (LPARAM)messToBox.c_str());
 				SetWindowText(hEdit_typingMessage, "");
-				myClient->sendToFriend((char*)friendChating.c_str(), (char*)messToBox.c_str());
+				if (friendChating.empty()) {
+					string messDisplay;
+					messDisplay.append("<");
+					messDisplay.append(groupChating);
+					messDisplay.append(">");
+					string messToBox = getMessageToBox(mess, nameUser);
+					messDisplay.append(messToBox);
+					SendMessage(hEdit_chatbox, EM_REPLACESEL, 0, (LPARAM)messDisplay.c_str());
+					myClient->sendToTeam((char*)groupChating.c_str(), (char*)messToBox.c_str());
+				}
+				else {
+					string messToBox = getMessageToBox(mess, nameUser);
+					SendMessage(hEdit_chatbox, EM_REPLACESEL, 0, (LPARAM)messToBox.c_str());
+					myClient->sendToFriend((char*)friendChating.c_str(), (char*)messToBox.c_str());
+				}
+				
 			}
-				break;
-			case BTN_CREATE_GROUP:
-				windowtoopenenum = windowCreateGroup;
 				break;
 			case BTN_REFRESH_FRIEND:
 				myClient->getListFriendRequest();
-				break;
-			case BTN_REFRESH_GROUP:
-				myClient->getListTeamRequest();
 				break;
 			case BTN_LOGOUT:
 				myClient->logoutRequest();
@@ -391,7 +459,7 @@ LRESULT CALLBACK windowprocessforwindowChatbox(HWND hwndChatbox, UINT message, W
 				break;
 			case BTN_EXIT_CHAT_BOX:
 				DestroyWindow(hwndChatbox);
-				windowLoginOpen = windowMainOpen = windowSignupOpen = windowChatboxOpen = windowCreateGroupOpen = false;
+				windowLoginOpen = windowMainOpen = windowSignupOpen = windowChatboxOpen = windowCreateGroupOpen = windowLeaveGroupOpen = false;
 				break;
 			}
 	}
@@ -404,7 +472,7 @@ LRESULT CALLBACK windowprocessforwindowCreateGroup(HWND hwndCreategroup, UINT me
 		windowCreateGroupOpen = false;
 		break;
 	case WM_CREATE:
-		windowCreateGroupOpen = false;
+		windowCreateGroupOpen = true;	
 		addControlCreateGroup(hwndCreategroup);
 		listUserAddedTemp.clear();
 		break;
@@ -415,7 +483,7 @@ LRESULT CALLBACK windowprocessforwindowCreateGroup(HWND hwndCreategroup, UINT me
 		switch LOWORD(wParam) {
 		case LB_USER_ADDED:
 			switch (HIWORD(wParam)) {
-			case LBN_DBLCLK:			// bắt sự kiện click double trong list Friend
+			case LBN_DBLCLK:		
 				char buffer[256];
 				int index = SendMessage((HWND)hListFriends, LB_GETCARETINDEX, 0, 0);
 				SendMessage((HWND)hListFriends, LB_GETTEXT, (LPARAM)index, (WPARAM)buffer);
@@ -425,6 +493,7 @@ LRESULT CALLBACK windowprocessforwindowCreateGroup(HWND hwndCreategroup, UINT me
 		case BTN_ADD: {
 
 			string userAdd = getTextFromEdit(hwndCreategroup, EDIT_USERNAME_CR);
+			SetWindowText(hEdit_username_cr, "");
 			if (!checkUserInListFriend(userAdd)) {
 				MessageBox(NULL, "This friend is not online now!", "not found!", MB_OK);
 				break;
@@ -435,10 +504,10 @@ LRESULT CALLBACK windowprocessforwindowCreateGroup(HWND hwndCreategroup, UINT me
 					break;
 				}
 				SendMessage(hListUserAdded, LB_RESETCONTENT, 0, 0);
+				
 				listUserAddedTemp.push_back(userAdd);
 				for (int i = 0; i < listUserAddedTemp.size(); i++)
 					SendMessage(hListUserAdded, LB_ADDSTRING, 0, (LPARAM)listUserAddedTemp[i].c_str());
-				
 			}
 		}
 			break;
@@ -459,16 +528,51 @@ LRESULT CALLBACK windowprocessforwindowCreateGroup(HWND hwndCreategroup, UINT me
 	return DefWindowProc(hwndCreategroup, message, wParam, lParam);
 }
 
+LRESULT CALLBACK windowprocessforwindowLeaveGroup(HWND hwndLeaveGroup, UINT message, WPARAM wParam, LPARAM lParam) {
+	switch (message) {
+	case WM_DESTROY:
+		windowLeaveGroupOpen = false;
+		break;
+	case WM_CREATE:
+		windowLeaveGroupOpen = true;	
+		addControlLeaveGroup(hwndLeaveGroup);
+		break;
+	case WM_CLOSE:
+		DestroyWindow(hwndLeaveGroup);
+		break;
+	case WM_COMMAND:
+		switch LOWORD(wParam) {
+		case BTN_LEAVE:
+			string teamName = getTextFromEdit(hwndLeaveGroup, EDIT_NAMEGROUP_TO_LEAVE);
+			if (teamName.empty()) {
+				MessageBox(NULL, "you haven't typed anything yet!", "empty!", MB_OK);
+			}
+			else {
+				myClient->leaveTeamRequest((char*)teamName.c_str());
+				if (teamName.compare(groupChating) == 0) {
+					groupChating.clear();
+					SetWindowText(hStaticChating, "");
+				}
+				DestroyWindow(hwndLeaveGroup);
+				break;
+			}
+			break;
+		}
+	}
+	return DefWindowProc(hwndLeaveGroup, message, wParam, lParam);
+
+}
+
+
 void createMenu(HWND hwnd) {
 	hMenu = CreateMenu();
 	HMENU hOptionMenu = CreateMenu();
-	AppendMenu(hOptionMenu, MF_STRING, OPTION_MENU_CREATE_GROUP, "Create group");
-	AppendMenu(hOptionMenu, MF_STRING, OPTION_MENU_CREATE_GROUP, "New Friend");
+	AppendMenu(hOptionMenu, MF_STRING, OPTION_MENU_CREATE_GROUP, "Create Group");
+	AppendMenu(hOptionMenu, MF_STRING, OPTION_MENU_EXIT_GROUP, "Exit Group");
 	AppendMenu(hOptionMenu, MF_SEPARATOR, NULL, NULL);
 	AppendMenu(hOptionMenu, MF_STRING, OPTION_MENU_EXIT, "Exit");
 
 	AppendMenu(hMenu, MF_POPUP, (UINT_PTR)hOptionMenu, "Option");
-	AppendMenu(hMenu, MF_STRING, NULL, "Help");
 	SetMenu(hwnd, hMenu);
 }
 

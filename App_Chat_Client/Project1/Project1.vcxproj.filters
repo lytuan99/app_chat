@@ -44,5 +44,8 @@
     <ClInclude Include="Business.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="ExitGroup.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

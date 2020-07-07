@@ -1,17 +1,17 @@
 ﻿  WinMain.cpp
-c:\users\lytua\desktop\tai_lieu_app_chat\project1\project1\client.h(12): warning C4005: 'FAILED': macro redefinition
+c:\users\lytua\desktop\tai_lieu_app_chat\app_chat\app_chat\app_chat_client\project1\client.h(12): warning C4005: 'FAILED': macro redefinition
   c:\program files (x86)\windows kits\8.1\include\shared\winerror.h(26237): note: see previous definition of 'FAILED'
-c:\users\lytua\desktop\tai_lieu_app_chat\project1\project1\business.h(162): warning C4018: '<': signed/unsigned mismatch
-c:\users\lytua\desktop\tai_lieu_app_chat\project1\project1\business.h(191): warning C4018: '<': signed/unsigned mismatch
-c:\users\lytua\desktop\tai_lieu_app_chat\project1\project1\business.h(197): warning C4018: '<': signed/unsigned mismatch
-c:\users\lytua\desktop\tai_lieu_app_chat\project1\project1\business.h(205): warning C4018: '<': signed/unsigned mismatch
-c:\users\lytua\desktop\tai_lieu_app_chat\project1\project1\winmain.cpp(85): warning C4101: 'wcforwindowCreateGroup': unreferenced local variable
-c:\users\lytua\desktop\tai_lieu_app_chat\project1\project1\winmain.cpp(439): warning C4018: '<': signed/unsigned mismatch
-c:\users\lytua\desktop\tai_lieu_app_chat\project1\project1\winmain.cpp(476): warning C4018: '<': signed/unsigned mismatch
+c:\users\lytua\desktop\tai_lieu_app_chat\app_chat\app_chat\app_chat_client\project1\business.h(166): warning C4018: '<': signed/unsigned mismatch
+c:\users\lytua\desktop\tai_lieu_app_chat\app_chat\app_chat\app_chat_client\project1\business.h(194): warning C4018: '<': signed/unsigned mismatch
+c:\users\lytua\desktop\tai_lieu_app_chat\app_chat\app_chat\app_chat_client\project1\business.h(216): warning C4018: '<': signed/unsigned mismatch
+c:\users\lytua\desktop\tai_lieu_app_chat\app_chat\app_chat\app_chat_client\project1\business.h(224): warning C4018: '<': signed/unsigned mismatch
+c:\users\lytua\desktop\tai_lieu_app_chat\app_chat\app_chat\app_chat_client\project1\business.h(233): warning C4018: '<': signed/unsigned mismatch
+c:\users\lytua\desktop\tai_lieu_app_chat\app_chat\app_chat\app_chat_client\project1\winmain.cpp(509): warning C4018: '<': signed/unsigned mismatch
+c:\users\lytua\desktop\tai_lieu_app_chat\app_chat\app_chat\app_chat_client\project1\winmain.cpp(576): warning C4018: '<': signed/unsigned mismatch
   Client.cpp
-c:\users\lytua\desktop\tai_lieu_app_chat\project1\project1\client.h(12): warning C4005: 'FAILED': macro redefinition
+c:\users\lytua\desktop\tai_lieu_app_chat\app_chat\app_chat\app_chat_client\project1\client.h(12): warning C4005: 'FAILED': macro redefinition
   c:\program files (x86)\windows kits\8.1\include\shared\winerror.h(26237): note: see previous definition of 'FAILED'
   Generating Code...
-c:\users\lytua\desktop\tai_lieu_app_chat\project1\project1\winmain.cpp(172): warning C4715: 'WinMain': not all control paths return a value
-  Project1.vcxproj -> C:\Users\lytua\Desktop\tai_lieu_app_chat\Project1\Debug\Project1.exe
-  Project1.vcxproj -> C:\Users\lytua\Desktop\tai_lieu_app_chat\Project1\Debug\Project1.pdb (Partial PDB)
+c:\users\lytua\desktop\tai_lieu_app_chat\app_chat\app_chat\app_chat_client\project1\winmain.cpp(224): warning C4715: 'WinMain': not all control paths return a value
+  Project1.vcxproj -> C:\Users\lytua\Desktop\tai_lieu_app_chat\APP_CHAT\app_chat\App_Chat_Client\Debug\Project1.exe
+  Project1.vcxproj -> C:\Users\lytua\Desktop\tai_lieu_app_chat\APP_CHAT\app_chat\App_Chat_Client\Debug\Project1.pdb (Partial PDB)

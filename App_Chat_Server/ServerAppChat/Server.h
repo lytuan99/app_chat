@@ -9,11 +9,11 @@
 
 
 int classifyMessageAndSendToClient(SOCKET connSock, char buff[]);
-int createRoomChat(char buff[], SOCKET connSock);
+int createTeamChat(char buff[], SOCKET connSock);
 int leaveTheConversation(char buff[]);
-int listRoomHasUser(char buff[], SOCKET connSock);
+int listTeamHasUser(char buff[], SOCKET connSock);
 int listUserOnline(char buff[], SOCKET connSock);
-int listUserInRoom(char buff[], SOCKET connSock);
+int listUserInTeam(char buff[], SOCKET connSock);
 int transferMessagesPrivateChat(char buff[], SOCKET currentConnSock);
 int transferMessagesPublicChat(char buff[], SOCKET currentConnSock);
 string registerProcess(char buff[], SOCKET connSock);
@@ -33,12 +33,12 @@ int classifyMessageAndSendToClient(SOCKET connSock, char buff[]);
 int transferMessagesPrivateChat(char buff[], SOCKET currentConnSock);
 int transferMessagesPublicChat(char buff[], SOCKET currentConnSock);
 
-int createRoomChat(char buff[], SOCKET connSock);
-int leaveTheConversation(char buff[]);
+int createTeamChat(char buff[], SOCKET connSock);
+int leaveTheConversation(char buff[], SOCKET connSock);
 
-int listRoomHasUser(char buff[], SOCKET connSock);
+//int listTeamHasUser(char buff[], SOCKET connSock);
 int listUserOnline(char buff[], SOCKET connSock);
-int listUserInRoom(char buff[], SOCKET connSock);
+int listUserInTeam(char buff[], SOCKET connSock);
 
 
 
@@ -76,23 +76,24 @@ int classifyMessageAndSendToClient(SOCKET connSock, char buff[]) {
 		return transferMessagesPublicChat(buff, connSock);
 	}
 
-	else if (strcmp(typeMessage, CREATE_ROOM_CHAT) == 0) {
-		return createRoomChat(buff, connSock);
+	else if (strcmp(typeMessage, CREATE_TEAM_CHAT) == 0) {
+		return createTeamChat(buff, connSock);
 	}
 
 	else if (strcmp(typeMessage, LEAVE_THE_CONVERSATION) == 0) {
-		return leaveTheConversation(buff);
+		cout << "test recv buff leav: " << buff << endl;
+		return leaveTheConversation(buff, connSock);
 	}
 
-	else if (strcmp(typeMessage, LIST_ROOM_CHAT) == 0) {
-		cout << "list room chat recv: " << buff << endl;
-		return listRoomHasUser(buff, connSock);
-	}
+	/*else if (strcmp(typeMessage, LIST_TEAM_CHAT) == 0) {
+	printf("  buff recv : %s", buff);
+	return listTeamHasUser(buff, connSock);
+	}*/
 	else if (strcmp(typeMessage, LIST_USER_ONLINE) == 0) {
 		return listUserOnline(buff, connSock);
 	}
-	else if (strcmp(typeMessage, LIST_USER_IN_ROOM) == 0) {
-		return listUserInRoom(buff, connSock);
+	else if (strcmp(typeMessage, LIST_USER_IN_TEAM) == 0) {
+		return listUserInTeam(buff, connSock);
 	}
 }
 
@@ -121,16 +122,18 @@ int transferMessagesPrivateChat(char buff[], SOCKET currentConnSock) {
 
 int transferMessagesPublicChat(char buff[], SOCKET currentConnSock) {
 	char sendBuff[BUFF_SIZE];
-	string idRoom;
+	string idTeam;
 	string messages;
-	int index = getMessages(&idRoom, buff, OPCODE_REQUEST_SIZE);
-	int id = stoi(idRoom, 0, 10);
+	int index = getMessages(&idTeam, buff, OPCODE_REQUEST_SIZE);
+	index = getMessages(&messages, buff, index);
+	int id = stoi(idTeam, 0, 10);
 	int indexCurrentUser = findUserNameBySocket(currentConnSock);
 	if (indexCurrentUser < 0) {
 		return 1;
 	}
+	int indexTeam = findTeamById(id);
 	string payload;
-	payload.append(idRoom);
+	payload.append(listTeamChat[indexTeam].teamName);
 	payload.append("|");
 	payload.append(listClient[indexCurrentUser].userName);
 	payload.append("|");
@@ -139,11 +142,11 @@ int transferMessagesPublicChat(char buff[], SOCKET currentConnSock) {
 
 	index = getMessages(&messages, buff, index);
 	bool check = false;
-	for (int i = 0; i < listRoomChat.size(); i++) {
-		if (listRoomChat[i].id == id) {
+	for (int i = 0; i < listTeamChat.size(); i++) {
+		if (listTeamChat[i].id == id) {
 			check = true;
-			for (int j = 0; j < listRoomChat[i].listUsername.size(); j++) {
-				index = checkUserOnline(listRoomChat[i].listUsername[j]);
+			for (int j = 0; j < listTeamChat[i].listUsername.size(); j++) {
+				index = checkUserOnline(listTeamChat[i].listUsername[j]);
 				if (index >= 0) {
 					if (listClient[index].connSock != currentConnSock) {
 						sendToClient(listClient[index].connSock, sendBuff);
@@ -156,104 +159,90 @@ int transferMessagesPublicChat(char buff[], SOCKET currentConnSock) {
 	return 1;
 }
 
-int createRoomChat(char buff[], SOCKET connSock) {
+int createTeamChat(char buff[], SOCKET connSock) {
 	string numberUserString;
 	string username[ACCOUNT_SIZE];
-	string roomName;
-	int id = listRoomChat.size() + 1;
+	string teamName;
+	int id = listTeamChat.size() + 1;
 
-	string idRoom = std::to_string(id);
+	string idTeam = std::to_string(id);
 	int index = getMessages(&numberUserString, buff, OPCODE_REQUEST_SIZE);
-	index = getMessages(&roomName, buff, index);
-	int numberOfUserInRoom = stoi(numberUserString, 0, 10);
+	index = getMessages(&teamName, buff, index);
+	int numberOfUserInTeam = stoi(numberUserString, 0, 10);
+	cout << " number user  " << numberOfUserInTeam << endl;
 	int i = 0;
-	while (i < numberOfUserInRoom) {
+	while (i < numberOfUserInTeam) {
 		index = getMessages(&username[i], buff, index);
 		i++;
 	}
-	RoomChat roomChat;
-	roomChat.id = id;
+	TeamChat teamChat;
+	teamChat.id = id;
 	vector<string> listUser;
 	char sendBuff[BUFF_SIZE];
 	string payload;
-	payload += roomName;
-	for (int i = 0; i < numberOfUserInRoom; i++) {
+	payload += to_string(id);
+	payload.append("|");
+	payload += teamName;
+	packageBuff(CREATE_TEAM_CHAT, payload, sendBuff);
+	for (int i = 0; i < numberOfUserInTeam; i++) {
 		int a = checkUserOnline(username[i]);
+		cout << username[i] << " user name " << endl;
+		listUser.push_back(username[i]);
 		if (a >= 0) {
-			listUser.push_back(listClient[a].userName);
-			packageBuff(CREATE_ROOM_CHAT, payload, sendBuff);
 			sendToClient(listClient[a].connSock, sendBuff);
 		}
 	}
-	roomChat.listUsername = listUser;
-	roomChat.roomName = roomName;
-	listRoomChat.push_back(roomChat);
+	listUser.push_back(listClient[findUserNameBySocket(connSock)].userName);
+	sendToClient(connSock, sendBuff);
+	teamChat.listUsername = listUser;
+	teamChat.teamName = teamName;
+	listTeamChat.push_back(teamChat);
 	return 1;
 }
 
 
-int leaveTheConversation(char buff[]) {
+int leaveTheConversation(char buff[], SOCKET connSock) {
 	char sendBuff[BUFF_SIZE];
-	string idRoom;
-	string username;
-	int index = getMessages(&idRoom, buff, OPCODE_REQUEST_SIZE);
-	index = getMessages(&username, buff, index);
-	int id = stoi(idRoom, 0, 10);
+	string idTeam;
+	
+	int index = getMessages(&idTeam, buff, OPCODE_REQUEST_SIZE);
+	//index = getMessages(&username, buff, index);
+	
+	int id = stoi(idTeam, 0, 10);
+	string username = listClient[findUserNameBySocket(connSock)].userName;
+	string payload;
+	payload += idTeam;
+	payload += "|";
+	payload += "Leave team!";
 
-	packageBuff(LEAVE_THE_CONVERSATION, username, sendBuff);
+	packageBuff(PUBLIC_MESSAGE, payload, sendBuff);
 
-	//get index by room in listRoom 
-	int indexRoomInList = findRoomById(id);
-	vector<string> listUserInRoom = listRoomChat[indexRoomInList].listUsername;
-	int indexUserInRoom = checkUserInRoom(username, indexRoomInList);
-	if (indexUserInRoom < 0) {
+	int indexTeamInList = findTeamById(id);
+	vector<string> listUserInTeam = listTeamChat[indexTeamInList].listUsername;
+	int indexUserInTeam = checkUserInTeam(username, indexTeamInList);
+	if (indexUserInTeam < 0) {
 		return 1;
 	}
 
-	listRoomChat[indexRoomInList].listUsername.erase(listRoomChat[indexRoomInList].listUsername.begin() + indexUserInRoom);
+	listTeamChat[indexTeamInList].listUsername.erase(listTeamChat[indexTeamInList].listUsername.begin() + indexUserInTeam);
 
-	for (int i = 0; i < listUserInRoom.size(); i++) {
-		if (i != indexUserInRoom) {
-			int indexUserInlistOnline = checkUserOnline(listUserInRoom[i]);
-			if (indexUserInlistOnline > 0) {
+	for (int i = 0; i < listUserInTeam.size(); i++) {
+		if (i != indexUserInTeam) {
+			int indexUserInlistOnline = checkUserOnline(listUserInTeam[i]);
+			if (indexUserInlistOnline >= 0) {
 				sendToClient(listClient[i].connSock, sendBuff);
 			}
 		}
 	}
+	packageBuff(LEAVE_THE_CONVERSATION, SUCCESS, sendBuff);
+	cout << "test leave: " << sendBuff << endl;
+	sendToClient(connSock, sendBuff);
 	return 1;
 }
 
-int listRoomHasUser(char buff[], SOCKET connSock) {
-	int indexSocket = findUserNameBySocket(connSock);
-	string str;
-	string payload;
-	int numberOfRoomHasUser = 0;
-	for (int i = 0; i < listRoomChat.size(); i++) {
-		int index = checkUserInRoom(listClient[indexSocket].userName, i);
-		if (index >= 0) {
-			numberOfRoomHasUser++;
-			str += listRoomChat[i].id;
-			str.append("|");
-			str.append(listRoomChat[i].roomName);
-			str.append("|");
-		}
-		str.append("|");
-	}
-	char numberUser[2];
-	itoa(numberOfRoomHasUser, numberUser, 10);
-	if (numberOfRoomHasUser <= 9) {
-		payload += "0";
-	}
-	payload += numberUser;
-	payload.append(str);
-	char sendBuff[BUFF_SIZE];
-	packageBuff(LIST_ROOM_CHAT, payload, sendBuff);
-	cout << "list room chat send: " << sendBuff << endl;
-	return sendToClient(connSock, sendBuff);
-}
 
 int listUserOnline(char buff[], SOCKET connSock) {
-	int index = findConnSock(connSock);
+	int index = findUserNameBySocket(connSock);
 	if (index < -1) {
 		return 1;
 	}
@@ -280,27 +269,27 @@ int listUserOnline(char buff[], SOCKET connSock) {
 	return sendToClient(connSock, sendBuff);
 }
 
-int listUserInRoom(char buff[], SOCKET connSock) {
-	string idRoom;
+int listUserInTeam(char buff[], SOCKET connSock) {
+	string idTeam;
 	string username;
-	int index = getMessages(&idRoom, buff, OPCODE_REQUEST_SIZE);
+	int index = getMessages(&idTeam, buff, OPCODE_REQUEST_SIZE);
 	string payload;
-	int id = stoi(idRoom, 0, 10);
-	int indexOfRoomInListRoom = findRoomById(id);
-	int numberOfUserInRoom = listRoomChat[indexOfRoomInListRoom].listUsername.size();
+	int id = stoi(idTeam, 0, 10);
+	int indexOfTeamInListTeam = findTeamById(id);
+	int numberOfUserInTeam = listTeamChat[indexOfTeamInListTeam].listUsername.size();
 	char converNumberUser[3];
-	std::string s = std::to_string(numberOfUserInRoom);
+	std::string s = std::to_string(numberOfUserInTeam);
 	//_itoa(numberOfUserInRoom, converNumberUser, 10);
 	payload.append(s);
-	vector<string> listUser = listRoomChat[indexOfRoomInListRoom].listUsername;
-	for (int i = 0; i < numberOfUserInRoom; i++) {
+	vector<string> listUser = listTeamChat[indexOfTeamInListTeam].listUsername;
+	for (int i = 0; i < numberOfUserInTeam; i++) {
 		if (listUser[i].compare(username) != 0) {
 			payload.append(listUser[i]);
 			payload.append("|");
 		}
 	}
 	char sendBuff[BUFF_SIZE];
-	packageBuff(LIST_USER_IN_ROOM, payload, sendBuff);
+	packageBuff(LIST_USER_IN_TEAM, payload, sendBuff);
 	return sendToClient(connSock, sendBuff);
 }
 

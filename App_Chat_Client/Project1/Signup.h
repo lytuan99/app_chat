@@ -21,8 +21,6 @@ int signUpCheck(char *username, char *pass, char *repass) {
 }
 
 
-
-
 void createwindowSignup(WNDCLASSEX& wc, HWND& hwnd, HINSTANCE hInst, int nShowCmd) {
 	if (wcSignupRegisteredbefore == false) {
 		ZeroMemory(&wc, sizeof(WNDCLASSEX));
