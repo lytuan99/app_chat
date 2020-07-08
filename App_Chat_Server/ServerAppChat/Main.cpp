@@ -30,13 +30,13 @@ unsigned __stdcall echoThread(void *param) {
 		int ret = recvFromClient(connectedSocket, buff);
 		if (ret < 0) {
 			cout << "Socket closed." << WSAGetLastError() << endl;
-			logoutClientDisconnect(connectedSocket);
+			handleLogoutClientDisconnect(connectedSocket);
 			closesocket(connectedSocket);
 			break;
 		}
 		else {
 			buff[ret] = 0;
-			ret = classifyMessageAndSendToClient(connectedSocket, buff);
+			ret = classifyRequest(connectedSocket, buff);
 			if (ret < 0) {
 				printf("Socket closed\n.");
 				closesocket(connectedSocket);
@@ -57,10 +57,9 @@ int main(int argc, char **argv)
 	SOCKET listenSock;
 	listenSock = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
 
-	//int port = atoi(argv[1]);
 	sockaddr_in serverAddr;
 	serverAddr.sin_family = AF_INET;
-	serverAddr.sin_port = htons(SERVER_PORT); //htons(port);
+	serverAddr.sin_port = htons(SERVER_PORT);
 	serverAddr.sin_addr.s_addr = inet_addr(SERVER_ADDR);
 
 	if (bind(listenSock, (sockaddr *)&serverAddr, sizeof(serverAddr)))
@@ -82,14 +81,13 @@ int main(int argc, char **argv)
 
 
 	while (1) {
-	SOCKET connSock;
-	connSock = accept(listenSock, (sockaddr *)&clientAddr, &clientAddeLen);
-	cout << "ConnSocket: " << connSock << endl;
-	_beginthreadex(0, 0, echoThread, (void *)connSock, 0, 0);
+		SOCKET connSock;
+		connSock = accept(listenSock, (sockaddr *)&clientAddr, &clientAddeLen);
+		cout << "ConnSocket: " << connSock << endl;
+		_beginthreadex(0, 0, echoThread, (void *)connSock, 0, 0);
 	}
 	closesocket(listenSock);
 	WSACleanup();
 	return 0;
 }
-
 

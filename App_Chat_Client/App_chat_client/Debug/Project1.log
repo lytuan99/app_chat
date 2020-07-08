@@ -1,0 +1,19 @@
+﻿C:\Program Files (x86)\MSBuild\Microsoft.Cpp\v4.0\V140\Microsoft.CppBuild.targets(392,5): warning MSB8028: The intermediate directory (Debug\) contains files shared from another project (Project1.vcxproj).  This can lead to incorrect clean and rebuild behavior.
+  WinMain.cpp
+c:\users\lytua\desktop\tai_lieu_app_chat\app_chat\app_chat\app_chat_client\app_chat_client\client.h(11): warning C4005: 'FAILED': macro redefinition
+  c:\program files (x86)\windows kits\8.1\include\shared\winerror.h(26237): note: see previous definition of 'FAILED'
+c:\users\lytua\desktop\tai_lieu_app_chat\app_chat\app_chat\app_chat_client\app_chat_client\business.h(225): warning C4018: '<': signed/unsigned mismatch
+c:\users\lytua\desktop\tai_lieu_app_chat\app_chat\app_chat\app_chat_client\app_chat_client\business.h(256): warning C4018: '<': signed/unsigned mismatch
+c:\users\lytua\desktop\tai_lieu_app_chat\app_chat\app_chat\app_chat_client\app_chat_client\business.h(306): warning C4018: '<': signed/unsigned mismatch
+c:\users\lytua\desktop\tai_lieu_app_chat\app_chat\app_chat\app_chat_client\app_chat_client\business.h(318): warning C4018: '<': signed/unsigned mismatch
+c:\users\lytua\desktop\tai_lieu_app_chat\app_chat\app_chat\app_chat_client\app_chat_client\business.h(330): warning C4018: '<': signed/unsigned mismatch
+c:\users\lytua\desktop\tai_lieu_app_chat\app_chat\app_chat\app_chat_client\app_chat_client\business.h(341): warning C4018: '<': signed/unsigned mismatch
+c:\users\lytua\desktop\tai_lieu_app_chat\app_chat\app_chat\app_chat_client\app_chat_client\winmain.cpp(431): warning C4018: '<': signed/unsigned mismatch
+c:\users\lytua\desktop\tai_lieu_app_chat\app_chat\app_chat\app_chat_client\app_chat_client\winmain.cpp(501): warning C4018: '<': signed/unsigned mismatch
+  Client.cpp
+c:\users\lytua\desktop\tai_lieu_app_chat\app_chat\app_chat\app_chat_client\app_chat_client\client.h(11): warning C4005: 'FAILED': macro redefinition
+  c:\program files (x86)\windows kits\8.1\include\shared\winerror.h(26237): note: see previous definition of 'FAILED'
+  Generating Code...
+c:\users\lytua\desktop\tai_lieu_app_chat\app_chat\app_chat\app_chat_client\app_chat_client\winmain.cpp(146): warning C4715: 'WinMain': not all control paths return a value
+  Project1.vcxproj -> C:\Users\lytua\Desktop\tai_lieu_app_chat\APP_CHAT\app_chat\App_Chat_Client\Debug\App_chat_client.exe
+  Project1.vcxproj -> C:\Users\lytua\Desktop\tai_lieu_app_chat\APP_CHAT\app_chat\App_Chat_Client\Debug\App_chat_client.pdb (Partial PDB)

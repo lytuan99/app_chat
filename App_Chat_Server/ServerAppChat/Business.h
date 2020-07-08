@@ -10,18 +10,18 @@
 #define SUCCESS "1"
 #define LOGGED_IN "2"
 
-//--------
-#define REGISTER "03"
-#define LOGIN "04"
-#define LOGOUT "05"
+#define REGISTER "01"
+#define LOGIN "02"
+#define LOGOUT "03"
 #define CREATE_TEAM_CHAT "06"
-#define PRIVATE_MESSAGE "07"
-#define PUBLIC_MESSAGE "08"
-#define LEAVE_THE_CONVERSATION "09"
-#define LIST_TEAM_CHAT "10"
-#define LIST_USER_ONLINE "11"
-#define LIST_USER_IN_TEAM "12"
+#define CHAT_FRIEND "04"
+#define CHAT_TEAM "05"
+#define LEAVE_TEAM "07"
+#define LIST_USER_ONLINE "09"
 
+
+//Response
+#define LEAVING_TEAM_RESPONSE "08"
 #define SYMBOL '|'
 
 typedef struct Client
@@ -41,19 +41,19 @@ vector<Client> listClient;
 vector<TeamChat> listTeamChat;
 using namespace std;
 
-int classifyMessageAndSendToClient(SOCKET connSock, char buff[]);
+
 int sendToClient(SOCKET currentConnSock, char buff[]);
 int recvFromClient(SOCKET connSock, char buff[]);
 int getMessages(string *messages, char buff[], int start);
 int checkUserOnline(string username);
-int findTeamById(int id);
+int findIndexTeamById(int id);
 int checkUserInTeam(string username, int index);
 void packageBuff(char *active, string message, char *buff);
 char* getTypeNotification(char *buff);
-int findUserNameBySocket(SOCKET connSock);
+int findIndexUserBySocket(SOCKET connSock);
 
-
-int findUserNameBySocket(SOCKET connSock) {
+/* Get index user in list by socket */
+int findIndexUserBySocket(SOCKET connSock) {
 	if (listClient.size() == 0) {
 		return -1;
 	}
@@ -64,6 +64,8 @@ int findUserNameBySocket(SOCKET connSock) {
 	}
 	return -1;
 }
+
+/* Get object in payload form receive buff */
 int getMessages(string *messages, char buff[], int start) {
 	char tmp[BUFF_SIZE];
 
@@ -75,6 +77,7 @@ int getMessages(string *messages, char buff[], int start) {
 	}
 	return start + 1;
 }
+/* Get opcode from receive buff */
 char* getTypeNotification(char *buff) {
 	char typeRequest[3];
 	int i = 0;
@@ -85,11 +88,13 @@ char* getTypeNotification(char *buff) {
 	typeRequest[i] = 0;
 	return typeRequest;
 }
+/* Receive message from client */
 int recvFromClient(SOCKET connSock, char buff[]) {
 	int ret = recv(connSock, buff, BUFF_SIZE, 0);
 	return ret;
 }
 
+/* Package buff before send to client */
 void packageBuff(char *typeActive, string messages, char *buff) {
 	int i = 0;
 	int j = 0;
@@ -103,14 +108,15 @@ void packageBuff(char *typeActive, string messages, char *buff) {
 	buff[i] = 0;
 }
 
+/* send message to client */
 int sendToClient(SOCKET connSock, char buff[]) {
-	//printf(" Buff send lytuan : %s\n", buff);
 	int ret = send(connSock, buff, strlen(buff), 0);
 	return ret;
 
 	return 1;
 }
 
+/* Check user online in list and return index user in list */
 int checkUserOnline(string username) {
 	for (int i = 0; i < listClient.size(); i++) {
 		if (listClient[i].userName == username) {
@@ -120,7 +126,8 @@ int checkUserOnline(string username) {
 	return -1;
 }
 
-int findTeamById(int id) {
+/* Get index of team in list Team by id */
+int findIndexTeamById(int id) {
 	if (listTeamChat.size() == 0) {
 		return -1;
 	}
@@ -132,6 +139,7 @@ int findTeamById(int id) {
 	return -1;
 }
 
+/* Check user in team. return -1 if team have not user */
 int checkUserInTeam(string username, int index) {
 	if (listTeamChat[index].listUsername.size() == 0) {
 		cout << "  list deo co nha  " << endl;

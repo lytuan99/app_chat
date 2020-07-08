@@ -14,6 +14,7 @@ typedef struct User
 int readFile(struct User user[]);
 void writeFile(struct User user[], int numberOfUser);
 
+/* read file and get list user then return number user */
 int readFile(struct User user[]) {
 	fstream f;
 	f.open(PATH, ios::in);
@@ -29,6 +30,7 @@ int readFile(struct User user[]) {
 	return numberUser;
 }
 
+/* Write list user in file */
 void writeFile(struct User user[], int numberOfUser) {
 	fstream f;
 	f.open(PATH, ios::out);
